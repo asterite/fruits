@@ -17,7 +17,9 @@ class Play < Chingu::GameState
     end
 
     self.input = {
-      left_mouse_button: :hand_grab_or_release
+      left_mouse_button: :grab_or_release,
+      holding_left_mouse_button: :try_grab,
+      released_left_mouse_button: :try_release,
     }
   end
 
@@ -49,7 +51,9 @@ class Play < Chingu::GameState
     end
   end
 
-  def hand_grab_or_release
+  def grab_or_release
+    return if @grabbing_nothing
+
     if @fruit_in_hand
       if $window.mouse_x < 120 || $window.mouse_x > 520 || $window.mouse_y < 40 || $window.mouse_y > 400
         return
@@ -67,5 +71,19 @@ class Play < Chingu::GameState
     @fruit_in_hand = @fruit_under_hand
     @fruit_in_hand.stop_moving
     @hand.grab
+  end
+
+  def try_grab
+    if !@fruit_in_hand && !@fruit_under_hand
+      @hand.grab
+      @grabbing_nothing = true
+    end
+  end
+
+  def try_release
+    if @grabbing_nothing
+      @hand.release
+      @grabbing_nothing = false
+    end
   end
 end
