@@ -31,22 +31,22 @@ class Play < Chingu::GameState
   end
 
   def update_fruit_under_hand_and_in_hand
-    fruit_under_hand = @hand.closest_collision(Fruit)
+    if @fruit_in_hand
+      @fruit_in_hand.x = $window.mouse_x - 10
+      @fruit_in_hand.y = $window.mouse_y - 10
+      return
+    end
 
+    fruit_under_hand = @hand.closest_collision(Fruit)
     if @fruit_under_hand != fruit_under_hand
       @fruit_under_hand.stop_blinking if @fruit_under_hand
       @fruit_under_hand = fruit_under_hand
       @fruit_under_hand.start_blinking if @fruit_under_hand
     end
-
-    if @fruit_in_hand
-      @fruit_in_hand.x = $window.mouse_x - 10
-      @fruit_in_hand.y = $window.mouse_y - 10
-    end
   end
 
   def update_fruits_eaten
-    Fruit.select { |f| f.y >= 420 }.each do |fruit|
+    Fruit.select { |f| f != @fruit_in_hand && f.y >= 420 }.each do |fruit|
       monster = Monster.select { |m| m.lane == fruit.lane }.first
       monster.eat fruit
     end
@@ -68,8 +68,28 @@ class Play < Chingu::GameState
         return
       end
 
-      @fruit_in_hand.lane = (($window.mouse_x - 120) / 80).floor
+      new_lane = (($window.mouse_x - 120) / 80).floor
+
+      # Adjust fruit's place if it collides with others
+      Fruit.each do |f|
+        if (f != @fruit_in_hand && f.lane == new_lane && (f.y - @fruit_in_hand.y).abs <= 33)
+          # Check if there's space above or below
+          new_y = @fruit_in_hand.y >= f.y ? f.y + 34 : f.y - 34
+          return if new_y < 40 || new_y > 400
+
+          Fruit.each do |f2|
+            if (f2 != @fruit_in_hand && f2.lane == new_lane && (f2.y - new_y).abs <= 33)
+              return
+            end
+          end
+          @fruit_in_hand.y = new_y
+          break
+        end
+      end
+
+      @fruit_in_hand.lane = new_lane
       @fruit_in_hand.start_moving
+      @fruit_in_hand.zorder -= 1
       @fruit_in_hand = nil
       @hand.release
       return
@@ -79,6 +99,8 @@ class Play < Chingu::GameState
 
     @fruit_in_hand = @fruit_under_hand
     @fruit_in_hand.stop_moving
+    @fruit_in_hand.stop_blinking
+    @fruit_in_hand.zorder += 1
     @hand.grab
   end
 
