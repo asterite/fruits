@@ -17,6 +17,7 @@ class Fruit < Chingu::GameObject
   end
 
   def lane=(lane)
+    @lane = lane
     self.x = 160 + 80 * lane
   end
 
