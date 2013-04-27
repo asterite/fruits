@@ -13,7 +13,7 @@ class Play < Chingu::GameState
     end
 
     every(1000) do
-      Fruit.create lane: Random.rand(5), kind: @kinds.sample, speed: 0.6
+      create_fruit
     end
 
     self.input = {
@@ -58,6 +58,18 @@ class Play < Chingu::GameState
     5.times do |i|
       @lane_image.draw 120 + 80 * i, 40, 1
     end
+  end
+
+  def create_fruit
+    available_lanes = Set.new [0, 1, 2, 3, 4]
+    Fruit.each do |f|
+      available_lanes.delete f.lane if f.y < 35
+    end
+
+    return if available_lanes.empty?
+
+    lane = available_lanes.to_a.sample
+    Fruit.create lane: lane, kind: @kinds.sample, speed: 0.5
   end
 
   def grab_or_release
