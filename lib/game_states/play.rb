@@ -31,10 +31,7 @@ class Play < Chingu::GameState
   end
 
   def update_fruit_under_hand_and_in_hand
-    fruit_under_hand = nil
-    Hand.each_collision(Fruit) do |hand, fruit|
-      fruit_under_hand = fruit
-    end
+    fruit_under_hand = @hand.closest_collision(Fruit)
 
     if @fruit_under_hand != fruit_under_hand
       @fruit_under_hand.stop_blinking if @fruit_under_hand
