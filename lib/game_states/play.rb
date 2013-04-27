@@ -26,6 +26,11 @@ class Play < Chingu::GameState
   def update
     super
 
+    update_fruit_under_hand_and_in_hand
+    update_fruits_eaten
+  end
+
+  def update_fruit_under_hand_and_in_hand
     fruit_under_hand = nil
     Hand.each_collision(Fruit) do |hand, fruit|
       fruit_under_hand = fruit
@@ -40,6 +45,13 @@ class Play < Chingu::GameState
     if @fruit_in_hand
       @fruit_in_hand.x = $window.mouse_x - 10
       @fruit_in_hand.y = $window.mouse_y - 10
+    end
+  end
+
+  def update_fruits_eaten
+    Fruit.select { |f| f.y >= 420 }.each do |fruit|
+      monster = Monster.select { |m| m.lane == fruit.lane }.first
+      monster.eat fruit
     end
   end
 

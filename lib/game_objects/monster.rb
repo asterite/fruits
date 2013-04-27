@@ -1,13 +1,14 @@
 class Monster < Chingu::GameObject
   include Chingu::Helpers::GFX
 
-  trait :timer
-
   MaxEnergy = 100
   MaxPatience = 100
 
   EnergyColor = Gosu::Color.argb(0xFF008800)
   PatienceColor = Gosu::Color.argb(0xFF0000FF)
+
+  trait :timer
+  attr_reader :lane
 
   def setup
     @kind = options[:kind].new(self)
@@ -52,6 +53,11 @@ class Monster < Chingu::GameObject
   def lane=(lane)
     @lane = lane
     self.x = 160 + 80 * lane
+  end
+
+  def eat(fruit)
+    @energy += fruit.energy
+    fruit.destroy
   end
 end
 

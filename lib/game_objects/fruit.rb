@@ -1,6 +1,7 @@
 class Fruit < Chingu::GameObject
   trait :bounding_box
   trait :timer
+  attr_reader :lane
 
   def setup
     @kind = options[:kind].new(self)
@@ -19,6 +20,10 @@ class Fruit < Chingu::GameObject
   def lane=(lane)
     @lane = lane
     self.x = 160 + 80 * lane
+  end
+
+  def energy
+    @kind.energy
   end
 
   def start_blinking
@@ -62,27 +67,39 @@ class FruitKind
   def can_be_grabbed?
     true
   end
+
+  def self.energy(value)
+    class_eval %Q(def energy; #{value}; end)
+  end
 end
 
 class Apple < FruitKind
+  energy 15
 end
 
 class Banana < FruitKind
+  energy 11
 end
 
 class Cherry < FruitKind
+  energy 2
 end
 
 class Lemon < FruitKind
+  energy 4
 end
 
 class Lime < FruitKind
+  energy 4
 end
 
 class Orange < FruitKind
+  energy 6
 end
 
 class Watermelon < FruitKind
+  energy 24
+
   def can_be_grabbed?
     false
   end
