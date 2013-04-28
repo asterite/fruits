@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "chingu"
+gem "chingu", "~> 0.9rc9"
 gem "texplay"
 gem "require_all"
 
