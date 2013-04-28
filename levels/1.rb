@@ -1,6 +1,6 @@
 name "Welcome to Fruits!"
 description "This is the description"
-time '0:10'
+time '0:01'
 fruits_per_second 1
 fruits Apple, Orange, Banana
 monsters do

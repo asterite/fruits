@@ -1,6 +1,8 @@
 class Play < Chingu::GameState
   trait :timer
 
+  attr_reader :hand
+
   def setup
     @level = Level.new options[:level]
 
