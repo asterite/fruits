@@ -7,7 +7,7 @@ class Monster < Chingu::GameObject
   EnergyColor = Gosu::Color.argb(0xFF008800)
   PatienceColor = Gosu::Color.argb(0xFF0000FF)
 
-  trait :timer
+  traits :timer, :asynchronous
   attr_reader :lane
 
   def setup
@@ -31,8 +31,11 @@ class Monster < Chingu::GameObject
 
   def draw
     super
-    draw_patience
-    draw_energy
+
+    unless @leaving
+      draw_patience
+      draw_energy
+    end
   end
 
   def draw_patience
@@ -57,7 +60,28 @@ class Monster < Chingu::GameObject
 
   def eat(fruit)
     @energy += fruit.energy
+    if @energy >= MaxEnergy
+      @energy = MaxEnergy
+      @kind.full
+    end
     fruit.destroy
+  end
+
+  def leave
+    return if @leaving
+    @leaving = true
+
+    self.angle = 180
+    async do |q|
+      q.tween 200, y: 640
+      q.exec { self.angle = 0 }
+      q.tween 200, y: 420
+      q.exec do
+        @energy = options[:energy] || 100
+        @patience = options[:patience] || 100
+        @leaving = false
+      end
+    end
   end
 end
 
@@ -65,5 +89,9 @@ class SweetTooth
   def initialize(monster)
     @monster = monster
     @monster.image = Image["sweet_tooth.png"]
+  end
+
+  def full
+    @monster.leave
   end
 end

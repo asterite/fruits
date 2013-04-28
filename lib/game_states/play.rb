@@ -9,7 +9,7 @@ class Play < Chingu::GameState
     @kinds = [Apple, Banana, Cherry, Lemon, Lime, Orange, Watermelon]
 
     5.times.map do |i|
-      Monster.create lane: i, kind: SweetTooth, patience: 100, energy: 50
+      Monster.create lane: i, kind: SweetTooth, patience: 100, energy: 99
     end
 
     every(1000) do
