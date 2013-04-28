@@ -16,6 +16,11 @@ class TimeLeft < Chingu::BasicGameObject
     end
   end
 
+  def destroy
+    super
+    @text.destroy
+  end
+
   def formatted_time
     seconds = @time % 60
     minutes = (@time - seconds) / 60

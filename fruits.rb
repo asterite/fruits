@@ -6,8 +6,6 @@ require_all "lib"
 
 include Gosu
 
-# Image.autoload_dirs << File.expand_path('../../media',  __FILE__)
-
 class Fruits < Chingu::Window
   def initialize
     super(640, 480, false)

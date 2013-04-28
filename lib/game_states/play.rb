@@ -30,6 +30,15 @@ class Play < Chingu::GameState
     }
   end
 
+  def reset
+    Fruit.destroy_all
+    Monster.destroy_all
+    Hand.destroy_all
+    TimeLeft.destroy_all
+    Chingu::Text.destroy_all
+    setup
+  end
+
   def update
     super
 
@@ -138,5 +147,6 @@ class Play < Chingu::GameState
   end
 
   def time_over
+    push_game_state Victory
   end
 end
