@@ -2,19 +2,26 @@ class Play < Chingu::GameState
   trait :timer
 
   def setup
+    @level = Level.new options[:level]
+
     @factory_image = Image["factory.png"]
     @lane_image = Image["lane.png"]
 
     @hand = Hand.create
-    @kinds = [Apple, Banana, Cherry, Lemon, Lime, Orange, Watermelon]
+    @fruit_kinds = @level.fruits
+    @fruit_creation_interval = 1000.0 / @level.fruits_per_second
 
-    5.times.map do |i|
-      Monster.create lane: i, kind: SweetTooth, patience: 100, energy: 99
+    @level.monsters.each_with_index do |monster, i|
+      Monster.create monster[1].merge(kind: monster[0], lane: i)
     end
 
-    every(1000) do
+    every(@fruit_creation_interval) do
       create_fruit
     end
+
+    TimeLeft.create time: @level.time
+
+    $window.caption = "Level #{@level.number}: #{@level.name}"
 
     self.input = {
       left_mouse_button: :grab_or_release,
@@ -69,7 +76,7 @@ class Play < Chingu::GameState
     return if available_lanes.empty?
 
     lane = available_lanes.to_a.sample
-    Fruit.create lane: lane, kind: @kinds.sample, speed: 0.5
+    Fruit.create lane: lane, kind: @fruit_kinds.sample, speed: 0.5
   end
 
   def grab_or_release
@@ -128,5 +135,8 @@ class Play < Chingu::GameState
       @hand.release
       @grabbing_nothing = false
     end
+  end
+
+  def time_over
   end
 end
