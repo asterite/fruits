@@ -12,13 +12,15 @@ class Fruits < Chingu::Window
 
     self.input = { :escape => :exit }
 
-    push_game_state Play.new(level: 1)
+    level = Level.new(1)
+
+    push_game_state Play.new level: level
   end
 
-  # def update
-  #   super
-  #   self.caption = "FPS: #{self.fps} milliseconds_since_last_tick: #{self.milliseconds_since_last_tick}"
-  # end
+  def update
+    super
+    self.caption = "FPS: #{self.fps} milliseconds_since_last_tick: #{self.milliseconds_since_last_tick}"
+  end
 end
 
 Fruits.new.show

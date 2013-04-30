@@ -4,7 +4,7 @@ class Play < Chingu::GameState
   attr_reader :hand
 
   def setup
-    @level = Level.new options[:level]
+    @level = options[:level]
 
     @factory_image = Image["factory.png"]
     @lane_image = Image["lane.png"]
@@ -30,9 +30,14 @@ class Play < Chingu::GameState
       holding_left_mouse_button: :try_grab,
       released_left_mouse_button: :try_release,
     }
+
+    after(0) do
+      push_game_state LevelDescription.new level: @level
+    end
   end
 
   def reset
+    Hand.destroy_all
     Fruit.destroy_all
     Monster.destroy_all
     Hand.destroy_all
@@ -120,6 +125,8 @@ class Play < Chingu::GameState
       @fruit_in_hand.lane = new_lane
       @fruit_in_hand.start_moving
       @fruit_in_hand.zorder -= 1
+      @fruit_in_hand.factor_x -= 0.2
+      @fruit_in_hand.factor_y -= 0.2
       @fruit_in_hand = nil
       @hand.release
       return
@@ -131,6 +138,8 @@ class Play < Chingu::GameState
     @fruit_in_hand.stop_moving
     @fruit_in_hand.stop_blinking
     @fruit_in_hand.zorder += 1
+    @fruit_in_hand.factor_x += 0.2
+    @fruit_in_hand.factor_y += 0.2
     @hand.grab
   end
 
