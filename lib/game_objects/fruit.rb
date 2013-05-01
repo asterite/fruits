@@ -60,9 +60,13 @@ class FruitKind
 
   def initialize(fruit)
     @fruit = fruit
-    @image = Image["#{self.class.name.downcase}.png"]
+    @image = self.class.image
     @blink_image = Image["#{self.class.name.downcase}_flash.png"]
     @fruit.image = @image
+  end
+
+  def self.image
+    Image["#{name.downcase}.png"]
   end
 
   def can_be_grabbed?

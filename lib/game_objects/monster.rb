@@ -17,9 +17,7 @@ class Monster < Chingu::GameObject
     @energy = options[:energy] || 100
     @patience = options[:patience] || 100
     @favorite = options[:favorite]
-    if @favorite
-      @favorite_image = Image["#{@favorite.name.downcase}.png"]
-    end
+    @favorite_image = @favorite.image if @favorite
     self.lane = options[:lane]
     self.y = 420
     self.zorder = 30
