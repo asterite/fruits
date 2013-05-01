@@ -118,20 +118,23 @@ class Monster < Chingu::GameObject
   end
 end
 
-class SweetTooth
+class MonsterKind
   def initialize(monster)
     @monster = monster
-    @monster.image = Image["sweet_tooth.png"]
+    @monster.image = self.class.image
   end
 
+  def self.image
+    Image["#{name.downcase}.png"]
+  end
+end
+
+class SweetTooth < MonsterKind
   def full
     @monster.leave
   end
 
   def no_energy
     $window.current_game_state.defeat(@monster, "La criatura murió de hambre")
-  end
-
-  def no_patience
   end
 end
