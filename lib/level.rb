@@ -7,6 +7,10 @@ class Level
     instance_eval File.read(File.expand_path("../../levels/#{number}.rb", __FILE__))
   end
 
+  def next
+    Level.new(number + 1)
+  end
+
   def name(value = nil)
     if value
       @name = value
@@ -17,7 +21,7 @@ class Level
 
   def description(value = nil)
     if value
-      @description = value
+      @description = value.split("\n").map(&:strip).join("\n").strip
     else
       @description
     end
@@ -46,6 +50,22 @@ class Level
     else
       @time
     end
+  end
+
+  def hide_patience
+    @hide_patience = true
+  end
+
+  def hide_patience?
+    @hide_patience
+  end
+
+  def hide_energy
+    @hide_energy = true
+  end
+
+  def hide_energy?
+    @hide_energy
   end
 
   def monsters

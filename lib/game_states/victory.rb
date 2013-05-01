@@ -2,12 +2,12 @@ class Victory < Chingu::GameState
   traits :timer
 
   def setup
-    @text = Chingu::Text.create text: "Level complete!", x: 212, y: 200, zorder: 200, font: "verdana", size: 40
+    @text = Chingu::Text.create text: "Nivel completo!", x: 212, y: 200, zorder: 200, font: "verdana", size: 40
 
     after(3000) {
-      previous_game_state.options[:level] += 1
-      previous_game_state.reset
-      pop_game_state
+      pop_game_state setup: false
+      previous_game_state.advance_to_next_level
+      push_game_state LevelDescription.new level: current_game_state.level
     }
   end
 

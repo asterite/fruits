@@ -12,9 +12,17 @@ class Fruits < Chingu::Window
 
     self.input = { :escape => :exit }
 
-    level = Level.new(1)
+    if ARGV.length == 0
+      level_number = 1
+    else
+      level_number = ARGV[0].to_i
+      level_number = 1 if level_number < 1
+    end
 
-    push_game_state Play.new level: level
+    level = Level.new(level_number)
+
+    push_game_state Play.new(level: level)
+    push_game_state LevelDescription.new(level: level)
   end
 
   def update

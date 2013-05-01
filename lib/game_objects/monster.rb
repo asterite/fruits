@@ -31,11 +31,26 @@ class Monster < Chingu::GameObject
 
   def draw
     super
-
     unless @leaving
-      draw_patience
-      draw_energy
+      draw_patience unless hide_patience?
+      draw_energy unless hide_energy?
     end
+  end
+
+  def hide_patience
+    @hide_patience = true
+  end
+
+  def hide_patience?
+    @hide_patience
+  end
+
+  def hide_energy
+    @hide_energy = true
+  end
+
+  def hide_energy?
+    @hide_energy
   end
 
   def draw_patience

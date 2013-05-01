@@ -14,7 +14,9 @@ class Play < Chingu::GameState
     @fruit_creation_interval = 1000.0 / @level.fruits_per_second
 
     @level.monsters.each_with_index do |monster, i|
-      Monster.create monster[1].merge(kind: monster[0], lane: i)
+      monster = Monster.create monster[1].merge(kind: monster[0], lane: i)
+      monster.hide_patience if @level.hide_patience?
+      monster.hide_energy if @level.hide_energy?
     end
 
     every(@fruit_creation_interval) do
@@ -30,10 +32,15 @@ class Play < Chingu::GameState
       holding_left_mouse_button: :try_grab,
       released_left_mouse_button: :try_release,
     }
+  end
 
-    after(0) do
-      push_game_state LevelDescription.new level: @level
-    end
+  def advance_to_next_level
+    options[:level] = options[:level].next
+    reset
+  end
+
+  def level
+    options[:level]
   end
 
   def reset
