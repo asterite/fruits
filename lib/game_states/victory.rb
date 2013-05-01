@@ -2,7 +2,10 @@ class Victory < Chingu::GameState
   traits :timer
 
   def setup
-    @text = Chingu::Text.create text: "Ganaste! :-)", x: 232, y: 200, zorder: 200, font: "verdana", size: 40
+    text1 = "Ganaste! :-)"
+    width1 = Gosu::Font.new($window, "verdana", 40).text_width(text1)
+
+    Chingu::Text.create text: text1, x: 320 - width1 / 2, y: 200, zorder: 200, font: "verdana", size: 40, color: Gosu::Color::BLUE
 
     after(3000) {
       pop_game_state setup: false

@@ -3,7 +3,13 @@ class Defeat < Chingu::GameState
 
   def setup
     @game_object = options[:game_object]
-    @text = Chingu::Text.create text: "Perdiste! :-(", x: 232, y: 200, zorder: 200, font: "verdana", size: 40
+    @reason = options[:reason]
+    text1 = "Perdiste! :-("
+    width1 = Gosu::Font.new($window, "verdana", 40).text_width(text1)
+    width2 = Gosu::Font.new($window, "verdana", 30).text_width(@reason)
+
+    Chingu::Text.create text: text1, x: 320 - width1 / 2, y: 200, zorder: 200, font: "verdana", size: 40, color: Gosu::Color::RED
+    Chingu::Text.create text: @reason, x: 320 - width2 / 2, y: 234, zorder: 200, font: "verdana", size: 30, color: Gosu::Color::RED
 
     after(3000) {
       pop_game_state setup: false

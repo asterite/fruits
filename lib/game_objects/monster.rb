@@ -1,3 +1,5 @@
+# coding: utf-8
+
 class Monster < Chingu::GameObject
   include Chingu::Helpers::GFX
 
@@ -117,10 +119,10 @@ class SweetTooth
   end
 
   def no_energy
-    $window.current_game_state.defeat(@monster)
+    $window.current_game_state.defeat(@monster, "La criatura murió de hambre")
   end
 
   def no_patience
-    $window.current_game_state.defeat(@monster)
+    $window.current_game_state.defeat(@monster, "A la criatura se le acabó la paciencia")
   end
 end
