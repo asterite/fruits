@@ -7,7 +7,7 @@ class Monster < Chingu::GameObject
   MaxPatience = 100
 
   EnergyColor = Gosu::Color.argb(0xFF008800)
-  PatienceColor = Gosu::Color.argb(0xFF0000FF)
+  PatienceColor = Gosu::Color::RED
 
   traits :timer, :asynchronous
   attr_reader :lane

@@ -19,7 +19,8 @@ class Play < Chingu::GameState
       monster.hide_energy if @level.hide_energy?
     end
 
-    every(@fruit_creation_interval) do
+    stop_timer(:fruit_creation_timer)
+    every(@fruit_creation_interval, name: :fruit_creation_timer) do
       create_fruit
     end
 
