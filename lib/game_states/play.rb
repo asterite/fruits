@@ -164,7 +164,11 @@ class Play < Chingu::GameState
     end
   end
 
-  def time_over
+  def victory
     push_game_state Victory
+  end
+
+  def defeat(game_object)
+    push_game_state Defeat.new(game_object: game_object)
   end
 end

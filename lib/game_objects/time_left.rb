@@ -9,7 +9,7 @@ class TimeLeft < Chingu::BasicGameObject
 
     every(1000) do
       if @time == 1
-        $window.current_game_state.time_over
+        $window.current_game_state.victory
       end
       @time -= 1 if @time > 0
       @text.text = "Tiempo: #{formatted_time}"

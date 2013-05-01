@@ -22,10 +22,16 @@ class Monster < Chingu::GameObject
 
     every(2000) do
       @patience -= 1
+      if @patience == 0
+        @kind.no_patience
+      end
     end
 
     every(1000) do
       @energy -= 1
+      if @energy == 0
+        @kind.no_energy
+      end
     end
   end
 
@@ -108,5 +114,13 @@ class SweetTooth
 
   def full
     @monster.leave
+  end
+
+  def no_energy
+    $window.current_game_state.defeat(@monster)
+  end
+
+  def no_patience
+    $window.current_game_state.defeat(@monster)
   end
 end
