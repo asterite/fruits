@@ -3,6 +3,7 @@ description %(
   Cada criatura tiene una barrita verde que dice qué tan llena está.
   Las criaturas rosas son glotonas, quieren empacharse.
   Si una glotona se muere de hambre, perdés.
+  Tené en cuenta que cada fruta llena distinto.
   )
 time '0:30'
 fruits_per_second 0.5

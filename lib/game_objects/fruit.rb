@@ -2,6 +2,7 @@ class Fruit < Chingu::GameObject
   trait :bounding_box
   trait :timer
   attr_reader :lane
+  attr_reader :kind
 
   def setup
     @kind = options[:kind].new(self)

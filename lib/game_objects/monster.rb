@@ -16,6 +16,10 @@ class Monster < Chingu::GameObject
     @kind = options[:kind].new(self)
     @energy = options[:energy] || 100
     @patience = options[:patience] || 100
+    @favorite = options[:favorite]
+    if @favorite
+      @favorite_image = Image["#{@favorite.name.downcase}.png"]
+    end
     self.lane = options[:lane]
     self.y = 420
     self.zorder = 30
@@ -25,7 +29,7 @@ class Monster < Chingu::GameObject
     every(2000) do
       @patience -= 1
       if @patience == 0
-        @kind.no_patience
+        $window.current_game_state.defeat(self, "A la criatura se le acabó la paciencia")
       end
     end
 
@@ -42,6 +46,10 @@ class Monster < Chingu::GameObject
     unless @leaving
       draw_patience unless hide_patience?
       draw_energy unless hide_energy?
+
+      if @favorite
+        @favorite_image.draw self.x - @favorite_image.width / 2, self.y - 70, 2, 1, 1, Gosu::Color.argb(0x44FFFFFF)
+      end
     end
   end
 
@@ -82,6 +90,10 @@ class Monster < Chingu::GameObject
   end
 
   def eat(fruit)
+    if @favorite && @favorite != fruit.kind.class
+      $window.current_game_state.defeat(self, "La criatura comió una fruta que no es su favorita")
+    end
+
     @energy += fruit.energy
     if @energy >= MaxEnergy
       @energy = MaxEnergy
@@ -123,6 +135,5 @@ class SweetTooth
   end
 
   def no_patience
-    $window.current_game_state.defeat(@monster, "A la criatura se le acabó la paciencia")
   end
 end
