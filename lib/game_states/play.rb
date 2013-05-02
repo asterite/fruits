@@ -1,7 +1,10 @@
+# coding: utf-8
+
 class Play < Chingu::GameState
   trait :timer
 
   attr_reader :hand
+  attr_reader :fruit_falling
 
   def setup
     @level = options[:level]
@@ -45,6 +48,12 @@ class Play < Chingu::GameState
   end
 
   def reset
+    @fruit_in_hand = nil
+    @fruit_under_hand = nil
+    @monster_in_hand = nil
+    @monster_under_hand = nil
+    @fruit_falling = nil
+
     Hand.destroy_all
     Fruit.destroy_all
     Monster.destroy_all
@@ -95,6 +104,12 @@ class Play < Chingu::GameState
   def update_fruits_eaten
     Fruit.select { |f| f != @fruit_in_hand && f.y >= 420 }.each do |fruit|
       monster = Monster.select { |m| m.lane == fruit.lane }.first
+      if monster == @monster_in_hand
+        @fruit_falling = fruit
+        fruit.fall
+        defeat(fruit, "Se cayó una fruta")
+        return
+      end
       monster.eat fruit
     end
   end

@@ -1,5 +1,5 @@
 class Defeat < Chingu::GameState
-  traits :timer
+  traits :timer, :asynchronous
 
   def setup
     @game_object = options[:game_object]
@@ -31,5 +31,8 @@ class Defeat < Chingu::GameState
   def update
     super
     previous_game_state.hand.update
+    if previous_game_state.fruit_falling
+      previous_game_state.fruit_falling.update
+    end
   end
 end

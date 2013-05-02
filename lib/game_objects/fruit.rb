@@ -1,6 +1,5 @@
 class Fruit < Chingu::GameObject
-  trait :bounding_box
-  trait :timer
+  traits :bounding_box, :timer, :asynchronous
   attr_reader :lane
   attr_reader :kind
 
@@ -16,6 +15,12 @@ class Fruit < Chingu::GameObject
   def update
     super
     @y += @speed
+    if @falling
+      if self.factor_x > 0
+        self.factor_x -= 0.01
+        self.factor_y -= 0.01
+      end
+    end
   end
 
   def lane=(lane)
@@ -47,6 +52,11 @@ class Fruit < Chingu::GameObject
 
   def stop_moving
     @speed = 0
+  end
+
+  def fall
+    stop_moving
+    @falling = true
   end
 
   def can_be_grabbed?
