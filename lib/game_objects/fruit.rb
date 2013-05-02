@@ -55,8 +55,8 @@ class Fruit < Chingu::GameObject
 end
 
 class FruitKind
-  attr_accessor :image
-  attr_accessor :blink_image
+  attr_reader :image
+  attr_reader :blink_image
 
   def initialize(fruit)
     @fruit = fruit

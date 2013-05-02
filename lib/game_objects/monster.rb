@@ -3,6 +3,8 @@
 class Monster < Chingu::GameObject
   include Chingu::Helpers::GFX
 
+  trait :bounding_box
+
   MaxEnergy = 100
   MaxPatience = 100
 
@@ -37,6 +39,8 @@ class Monster < Chingu::GameObject
         @kind.no_energy
       end
     end
+
+    cache_bounding_box
   end
 
   def draw
@@ -49,6 +53,20 @@ class Monster < Chingu::GameObject
         @favorite_image.draw self.x - @favorite_image.width / 2, self.y - 70, 2, 1, 1, Gosu::Color.argb(0x44FFFFFF)
       end
     end
+  end
+
+  def start_blinking
+    blinking = true
+    self.image = @kind.blink_image
+    every(40, name: :blink) do
+      blinking = !blinking
+      self.image = blinking ? @kind.blink_image : @kind.image
+    end
+  end
+
+  def stop_blinking
+    stop_timer(:blink)
+    self.image = @kind.image
   end
 
   def hide_patience
@@ -77,9 +95,9 @@ class Monster < Chingu::GameObject
 
   def draw_status(value, reference, color, offset)
     status_width = value * (width - 4) / reference
-    fill_rect Chingu::Rect.new(x - (width - 4) / 2, y + offset, width - 4, 8), Gosu::Color::BLACK, 30
-    fill_rect Chingu::Rect.new(x - (width - 4) / 2, y + offset, status_width, 8), color, 30
-    draw_rect Chingu::Rect.new(x - (width - 4) / 2, y + offset, width - 4, 8), Gosu::Color::WHITE, 30
+    fill_rect Chingu::Rect.new(x - (width - 4) / 2, y + offset, width - 4, 8), Gosu::Color::BLACK, zorder
+    fill_rect Chingu::Rect.new(x - (width - 4) / 2, y + offset, status_width, 8), color, zorder
+    draw_rect Chingu::Rect.new(x - (width - 4) / 2, y + offset, width - 4, 8), Gosu::Color::WHITE, zorder
   end
 
   def lane=(lane)
@@ -119,9 +137,14 @@ class Monster < Chingu::GameObject
 end
 
 class MonsterKind
+  attr_reader :image
+  attr_reader :blink_image
+
   def initialize(monster)
     @monster = monster
-    @monster.image = self.class.image
+    @image = self.class.image
+    @blink_image = Image["#{self.class.name.downcase}_flash.png"]
+    @monster.image = @image
   end
 
   def self.image

@@ -57,7 +57,8 @@ class Play < Chingu::GameState
   def update
     super
 
-    update_fruit_under_hand_and_in_hand
+    update_fruit_under_hand_and_in_hand if @level.fruits_can_be_grabbed?
+    update_monster_under_hand_and_in_hand if @level.monsters_can_be_grabbed?
     update_fruits_eaten
   end
 
@@ -73,6 +74,21 @@ class Play < Chingu::GameState
       @fruit_under_hand.stop_blinking if @fruit_under_hand
       @fruit_under_hand = fruit_under_hand
       @fruit_under_hand.start_blinking if @fruit_under_hand
+    end
+  end
+
+  def update_monster_under_hand_and_in_hand
+    if @monster_in_hand
+      @monster_in_hand.x = $window.mouse_x - 10
+      @monster_in_hand.y = $window.mouse_y - 10
+      return
+    end
+
+    monster_under_hand = @hand.closest_collision(Monster)
+    if @monster_under_hand != monster_under_hand
+      @monster_under_hand.stop_blinking if @monster_under_hand
+      @monster_under_hand = monster_under_hand
+      @monster_under_hand.start_blinking if @monster_under_hand
     end
   end
 
@@ -107,48 +123,88 @@ class Play < Chingu::GameState
     return if @grabbing_nothing
 
     if @fruit_in_hand
-      if $window.mouse_x < 120 || $window.mouse_x > 520 || $window.mouse_y < 40 || $window.mouse_y > 400
-        return
-      end
-
-      new_lane = (($window.mouse_x - 120) / 80).floor
-
-      # Adjust fruit's place if it collides with others
-      Fruit.each do |f|
-        if (f != @fruit_in_hand && f.lane == new_lane && (f.y - @fruit_in_hand.y).abs <= 33)
-          # Check if there's space above or below
-          new_y = @fruit_in_hand.y >= f.y ? f.y + 34 : f.y - 34
-          return if new_y < 40 || new_y > 400
-
-          Fruit.each do |f2|
-            if (f2 != @fruit_in_hand && f2.lane == new_lane && (f2.y - new_y).abs <= 33)
-              return
-            end
-          end
-          @fruit_in_hand.y = new_y
-          break
-        end
-      end
-
-      @fruit_in_hand.lane = new_lane
-      @fruit_in_hand.start_moving
-      @fruit_in_hand.zorder -= 1
-      @fruit_in_hand.factor_x -= 0.2
-      @fruit_in_hand.factor_y -= 0.2
-      @fruit_in_hand = nil
-      @hand.release
+      try_drop_fruit
       return
     end
 
-    return unless @fruit_under_hand && @fruit_under_hand.can_be_grabbed?
+    if @monster_in_hand
+      try_drop_monster
+      return
+    end
 
-    @fruit_in_hand = @fruit_under_hand
-    @fruit_in_hand.stop_moving
-    @fruit_in_hand.stop_blinking
-    @fruit_in_hand.zorder += 1
-    @fruit_in_hand.factor_x += 0.2
-    @fruit_in_hand.factor_y += 0.2
-    @hand.grab
+    if @fruit_under_hand && @fruit_under_hand.can_be_grabbed?
+      @fruit_in_hand = @fruit_under_hand
+      @fruit_in_hand.stop_moving
+      @fruit_in_hand.stop_blinking
+      @fruit_in_hand.zorder += 1
+      @fruit_in_hand.factor_x += 0.2
+      @fruit_in_hand.factor_y += 0.2
+      @hand.grab
+    end
+
+    if @monster_under_hand
+      @monster_in_hand = @monster_under_hand
+      @monster_in_hand.stop_blinking
+      @monster_in_hand.zorder += 1
+      @monster_in_hand.factor_x += 0.2
+      @monster_in_hand.factor_y += 0.2
+      @hand.grab
+    end
+  end
+
+  def try_drop_fruit
+    if $window.mouse_x < 120 || $window.mouse_x > 520 || $window.mouse_y < 40 || $window.mouse_y > 400
+      return
+    end
+
+    new_lane = (($window.mouse_x - 120) / 80).floor
+
+    # Adjust fruit's place if it collides with others
+    Fruit.each do |f|
+      if (f != @fruit_in_hand && f.lane == new_lane && (f.y - @fruit_in_hand.y).abs <= 33)
+        # Check if there's space above or below
+        new_y = @fruit_in_hand.y >= f.y ? f.y + 34 : f.y - 34
+        return if new_y < 40 || new_y > 400
+
+        Fruit.each do |f2|
+          if (f2 != @fruit_in_hand && f2.lane == new_lane && (f2.y - new_y).abs <= 33)
+            return
+          end
+        end
+        @fruit_in_hand.y = new_y
+        break
+      end
+    end
+
+    @fruit_in_hand.lane = new_lane
+    @fruit_in_hand.start_moving
+    @fruit_in_hand.zorder -= 1
+    @fruit_in_hand.factor_x -= 0.2
+    @fruit_in_hand.factor_y -= 0.2
+    @fruit_in_hand = nil
+    @hand.release
+  end
+
+  def try_drop_monster
+    if $window.mouse_x < 120 || $window.mouse_x > 520 || $window.mouse_y < 380
+      return
+    end
+
+    new_lane = (($window.mouse_x - 120) / 80).floor
+
+    if @monster_in_hand.lane == new_lane
+      @monster_in_hand.lane = new_lane
+    else
+      other_monster = Monster.select { |m| m.lane == new_lane }.first
+      other_monster.lane, @monster_in_hand.lane = @monster_in_hand.lane, other_monster.lane
+    end
+
+    @monster_in_hand.y = 420
+    @monster_in_hand.zorder += 1
+    @monster_in_hand.factor_x -= 0.2
+    @monster_in_hand.factor_y -= 0.2
+    @monster_in_hand = nil
+    @hand.release
   end
 
   def try_grab

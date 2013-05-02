@@ -68,6 +68,22 @@ class Level
     @hide_energy
   end
 
+  def fruits_can_be_grabbed
+    @fruits_can_be_grabbed = true
+  end
+
+  def fruits_can_be_grabbed?
+    @fruits_can_be_grabbed
+  end
+
+  def monsters_can_be_grabbed
+    @monsters_can_be_grabbed = true
+  end
+
+  def monsters_can_be_grabbed?
+    @monsters_can_be_grabbed
+  end
+
   def monsters
     yield if block_given?
     @monsters

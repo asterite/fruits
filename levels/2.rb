@@ -15,4 +15,5 @@ monsters do
   SweetTooth energy: 25, patience: 100
   SweetTooth energy: 15, patience: 100
 end
+fruits_can_be_grabbed
 hide_patience
